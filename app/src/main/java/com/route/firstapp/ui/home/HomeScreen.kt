@@ -2,7 +2,9 @@ package com.route.firstapp.ui.home
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -11,7 +13,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
@@ -20,7 +21,9 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -39,31 +42,36 @@ import com.route.firstapp.ui.theme.MyPreview
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun HomeScreen(modifier: Modifier = Modifier) {
+fun HomeScreen(
+    modifier: Modifier = Modifier,
+    onSearchBarClick: () -> Unit = {}
+) {
     Scaffold(
+        modifier = modifier,
         contentColor = Color.White,
         topBar = {
-            TopAppBar(title = {
-                Image(
-                    modifier = Modifier.height(24.dp),
-                    painter = painterResource(R.drawable.route_logo),
-                    contentDescription = "logo",
-                    contentScale = ContentScale.FillHeight
-                )
-            }
+            TopAppBar(
+                title = {
+                    Image(
+                        modifier = Modifier.height(24.dp),
+                        painter = painterResource(R.drawable.route_logo),
+                        contentDescription = "logo",
+                        contentScale = ContentScale.FillHeight
+                    )
+                }
             )
         }
-    ){paddingValues -> 
+    ) { paddingValues ->
         Column(
             modifier = Modifier
                 .padding(paddingValues)
                 .padding(16.dp)
-                .verticalScroll(state = rememberScrollState())
-            ,
+                .verticalScroll(state = rememberScrollState()),
             verticalArrangement = Arrangement.spacedBy(16.dp),
-
         ) {
-            HomeSearchBar()
+            HomeSearchBar(
+                onSearchBarClick = onSearchBarClick
+            )
             Image(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -72,7 +80,6 @@ fun HomeScreen(modifier: Modifier = Modifier) {
                 painter = painterResource(R.drawable.home_banner),
                 contentDescription = "home banner"
             )
-
 
             HomeCategoriesSection()
 
@@ -91,41 +98,71 @@ fun HomeScreen(modifier: Modifier = Modifier) {
     }
 }
 
-
 @Composable
-fun HomeSearchBar(modifier: Modifier = Modifier) {
+fun HomeSearchBar(
+    modifier: Modifier = Modifier,
+    onSearchBarClick: () -> Unit = {}
+) {
     Row(
         modifier = modifier.fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(24.dp),
     ) {
-        OutlinedTextField(
+        Box(
             modifier = Modifier
-                .background(color = Color.White,)
-                .weight(1f, fill = true),
-            textStyle = MaterialTheme.typography.bodyMedium.copy(
-                color = BrandColor,
-            ),
-            prefix = {
-                Icon(imageVector = Icons.Default.Search,
-                    contentDescription = "search")
-            },
-
-            shape =RoundedCornerShape(size = 50.dp),
-            state = TextFieldState(initialText = "Search Here"),
-        )
+                .weight(1f, fill = true)
+                .clickable { onSearchBarClick() }
+        ) {
+            OutlinedTextField(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(color = Color.White),
+                enabled = false,
+                readOnly = true,
+                textStyle = MaterialTheme.typography.bodyMedium.copy(
+                    color = BrandColor,
+                ),
+                prefix = {
+                    Icon(
+                        imageVector = Icons.Default.Search,
+                        contentDescription = "search",
+                        tint = BrandColor
+                    )
+                },
+                placeholder = {
+                    Text(
+                        text = "Search Here",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = BrandColor
+                    )
+                },
+                shape = RoundedCornerShape(size = 50.dp),
+                colors = OutlinedTextFieldDefaults.colors(
+                    disabledBorderColor = Color(0x4D004182),
+                    disabledTextColor = BrandColor,
+                    disabledPrefixColor = BrandColor,
+                    disabledPlaceholderColor = BrandColor.copy(alpha = 0.6f),
+                    disabledContainerColor = Color.White
+                ),
+                value = "",
+                onValueChange = {}
+            )
+        }
         Icon(
-            modifier = Modifier.width(24.dp),
+            modifier = Modifier
+                .width(24.dp)
+                .clickable { },
             imageVector = Icons.Default.ShoppingCart,
             tint = BrandColor,
-            contentDescription = "Cart")
+            contentDescription = "Cart"
+        )
     }
 }
+
 @Composable
 @Preview
-private fun HomeScreenPreview(){
+private fun HomeScreenPreview() {
     MyPreview {
-        HomeScreen(
-        )
+        HomeScreen()
     }
 }

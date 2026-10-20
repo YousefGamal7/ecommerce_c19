@@ -1,6 +1,7 @@
 package com.route.api
 
 import android.util.Log
+import com.route.api.helpers.SearchInterceptor
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -19,29 +20,34 @@ class ApiModule {
 
     @Provides
     @Singleton
-    fun provideOkHttpLoggingInterceptor(): HttpLoggingInterceptor{
-        val interceptor =  HttpLoggingInterceptor { message -> Log.e("RetroFit", message) }
+    fun provideOkHttpLoggingInterceptor(): HttpLoggingInterceptor {
+        val interceptor = HttpLoggingInterceptor { message -> Log.e("RetroFit", message) }
         interceptor.setLevel(level = HttpLoggingInterceptor.Level.BODY)
         return interceptor
     }
 
     @Provides
     @Singleton
+    fun provideSearchInterceptor(): SearchInterceptor {
+        return SearchInterceptor()
+    }
+
+    @Provides
+    @Singleton
     fun provideOkHttp(
-         loggingInterceptor: HttpLoggingInterceptor
-    ): OkHttpClient{
+        loggingInterceptor: HttpLoggingInterceptor,
+        searchInterceptor: SearchInterceptor,
+    ): OkHttpClient {
         val okhttp = OkHttpClient.Builder()
+            .addInterceptor(searchInterceptor)
             .addInterceptor(loggingInterceptor)
             .build()
         return okhttp
-
-
-
     }
 
     @Singleton
     @Provides
-    fun provideRetrofit(okHttp: OkHttpClient): Retrofit{
+    fun provideRetrofit(okHttp: OkHttpClient): Retrofit {
         val retrofit = Retrofit.Builder()
             .client(okHttp)
             .baseUrl("https://ecommerce.routemisr.com/api/")
@@ -55,7 +61,7 @@ class ApiModule {
     @Singleton
     fun provideServices(
         retrofit: Retrofit
-    ): ApiServices{
+    ): ApiServices {
         return retrofit.create(ApiServices::class.java)
     }
 }

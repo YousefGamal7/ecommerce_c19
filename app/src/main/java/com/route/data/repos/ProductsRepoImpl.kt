@@ -10,10 +10,16 @@ import javax.inject.Inject
 
 class ProductsRepoImpl @Inject constructor(
     val productsOnlineDataSource: ProductsOnlineDataSource,
-) : ProductsRepo{
+) : ProductsRepo {
     override fun getProducts(sort: ProductsSort): Flow<Resource<List<Product>?>> {
-       return productsOnlineDataSource.getProducts(
-           sort = sort,
-       )
+        return productsOnlineDataSource.getProducts(
+            sort = sort,
+        )
+    }
+
+    override fun searchProducts(keyword: String?): Flow<Resource<List<Product>?>> {
+        return productsOnlineDataSource.searchProducts(
+            keyword = keyword
+        )
     }
 }

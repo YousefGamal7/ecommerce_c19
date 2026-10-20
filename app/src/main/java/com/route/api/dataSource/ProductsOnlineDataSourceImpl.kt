@@ -24,4 +24,15 @@ class ProductsOnlineDataSourceImpl @Inject constructor(
             }
         )
     }
+
+    override fun searchProducts(keyword: String?): Flow<Resource<List<Product>?>> {
+        return safeApiCallV2(
+            api = {
+                apiServices.searchProducts(keyword = keyword)
+            },
+            converter = { dtos ->
+                dtos?.map { dto -> dto.toProduct() } ?: listOf()
+            }
+        )
+    }
 }

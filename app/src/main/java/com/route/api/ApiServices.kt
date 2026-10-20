@@ -17,4 +17,9 @@ interface ApiServices {
         @Query("sort") sort: ProductsSortTypeDto,
     ): BaseResponse<List<ProductDto>>
 
+    @GET("v1/products/search")
+    suspend fun searchProducts(
+        @Query("keyword") keyword: String? = null,
+    ): BaseResponse<List<ProductDto>>
+
 }
